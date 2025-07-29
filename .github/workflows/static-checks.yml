@@ -23,6 +23,6 @@ jobs:
 
       # ⭐ NEW — tfsec
       - name: tfsec
-        uses: aquasecurity/tfsec-pr-commenter-action@v1.5.0
+        uses: aquasecurity/tfsec-pr-commenter-action@v1.4.0
         with:
           tfsec_args: --soft-fail   # so it comments but doesn’t block if medium/low
