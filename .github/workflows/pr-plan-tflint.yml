@@ -6,25 +6,31 @@ on:
       - main
 
 jobs:
-  tflint-and-plan:
+  plan-per-module:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        module:
+          - modules/blob-backend
+          - modules/network
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
 
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v1
 
-      - name: Terraform Init & TFLint
+      - name: Init, TFLint & Plan
+        working-directory: ${{ matrix.module }}
         run: |
+          # Init without backend (modules don’t have one)
           terraform init -backend=false
+          # Lint your HCL
           tflint
-
-      - name: Terraform Plan (no backend)
-        run: |
-          terraform init -backend=false -reconfigure
-          terraform plan -out=tfplan -lock=false -refresh=false
+          # Plan what this module would add/change
+          terraform plan -out=tfplan -lock=false
