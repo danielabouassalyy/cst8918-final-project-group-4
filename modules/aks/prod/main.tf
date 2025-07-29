@@ -11,10 +11,11 @@ resource "azurerm_kubernetes_cluster" "cluster" {
   kubernetes_version  = 1.32
 
   default_node_pool {
-    enable_auto_scaling = true
     name                = "default"
-    node_min_count          = 1
-    node_max_count          = 3
+    min_count           = 1
+    max_count           = 3
+    enable_auto_scaling = true
+    type                = "VirtualMachineScaleSets"
     vm_size             = "Standard_B2s"
   }
 

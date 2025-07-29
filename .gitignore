@@ -4,8 +4,8 @@
 *.tfvars                 # per‑dev variable files (if you ever use them)
 *.tfplan                 # plan output files
 crash.log                # crash logs
-.terraform/provider      # local provider/cache dir
-.terraform/infra
+.terraform\provider      # local provider/cache dir
+.terraform\infra
 
 # ── VS Code ────────────────────────────────────────────────────────────
 .vscode/

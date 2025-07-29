@@ -1,3 +1,8 @@
+variable "name" {
+  description = "The name of the Redis instance"
+  type        = string
+}
+
 variable "resource_group_name" {
   type        = string
   description = "Name of the RG for the Terraform backend"
@@ -6,11 +11,6 @@ variable "resource_group_name" {
 variable "location" {
   type        = string
   description = "Azure region to deploy the backend"
-}
-
-variable "aks_cluster_name" {
-  type        = string
-  description = "Name of the AKS cluster"
 }
 
 variable "subnet_id" {

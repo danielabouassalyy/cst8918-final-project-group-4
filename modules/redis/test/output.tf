@@ -1,9 +1,10 @@
-output "client_certificate" {
-  value     = azurerm_kubernetes_cluster.cluster.kube_config[0].client_certificate
-  sensitive = true
+output "hostname" {
+  value       = azurerm_redis_cache.redis.hostname
+  description = "Redis hostname"
 }
 
-output "kube_config" {
-  value     = azurerm_kubernetes_cluster.cluster.kube_config_raw
-  sensitive = true
+output "primary_access_key" {
+  value       = azurerm_redis_cache.redis.primary_access_key
+  sensitive   = true
+  description = "Primary access key for Redis"
 }

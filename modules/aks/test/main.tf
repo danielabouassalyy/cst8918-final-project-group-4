@@ -11,10 +11,10 @@ resource "azurerm_kubernetes_cluster" "cluster" {
   kubernetes_version  = 1.32
 
   default_node_pool {
-    enable_auto_scaling = true
     name                = "default"
     node_count          = 1
     vm_size             = "Standard_B2s"
+    vnet_subnet_id      = var.subnet_id
   }
 
   identity {
@@ -22,7 +22,7 @@ resource "azurerm_kubernetes_cluster" "cluster" {
   }
 
   tags = {
-    Environment = "Production"
+    Environment = "test"
   }
 
 }
