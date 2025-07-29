@@ -1,6 +1,4 @@
-provider "azurerm" {
-  features {}
-}
+
 
 module "blob-backend" {
   source               = "./modules/blob-backend"

@@ -1,6 +1,17 @@
-# Terraform local state
-*.tfstate*
-.terraform/
+# ── Terraform ─────────────────────────────────────────────────────────
+*.tfstate                # local state
+*.tfstate.*              # state backups / partials
+*.tfvars                 # per‑dev variable files (if you ever use them)
+*.tfplan                 # plan output files
+crash.log                # crash logs
+.terraform/              # local provider/cache dir
 
-# VSCode
+# ── VS Code ────────────────────────────────────────────────────────────
 .vscode/
+
+# ── macOS / Windows cruft (optional) ──────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Misc secrets you generated during OIDC testing ────────────────────
+ghapp.json
