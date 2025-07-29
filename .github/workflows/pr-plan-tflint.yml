@@ -11,10 +11,11 @@ jobs:
 
     strategy:
       matrix:
-        # Just list your module names here
-        modulePath:
-          - modules/blob-backend
-          - modules/network
+        include:
+          - modulePath: "modules/blob-backend"
+            moduleName: "blob-backend"
+          - modulePath: "modules/network"
+            moduleName: "network"
 
     steps:
       - name: Checkout code
@@ -34,11 +35,10 @@ jobs:
       - name: TFLint
         run: tflint
 
-      - name: Plan module ${{ matrix.modulePath }}
+      - name: Plan module ${{ matrix.moduleName }}
         run: |
-          # We stay in the root, so the root provider block is in scope
           terraform plan \
-            -target=module.${{ basename(matrix.modulePath) }} \
-            -out=tfplan-${{ basename(matrix.modulePath) }} \
+            -target=module.${{ matrix.moduleName }} \
+            -out=tfplan-${{ matrix.moduleName }} \
             -lock=false \
             -input=false
