@@ -8,7 +8,6 @@ on:
 jobs:
   plan-per-module:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         include:
@@ -18,18 +17,15 @@ jobs:
             moduleName: "network"
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+      - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.0
 
-      - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@v1
+      - uses: terraform-linters/setup-tflint@v1
 
-      - name: Terraform Init (for lint + plan)
+      - name: Terraform Init for lint
         run: terraform init -backend=false
 
       - name: TFLint
@@ -37,9 +33,10 @@ jobs:
 
       - name: Plan module ${{ matrix.moduleName }}
         run: |
-          terraform init -backend=false -reconfigure
+          terraform init -backend=false
           terraform plan \
             -target=module.${{ matrix.moduleName }} \
             -out=tfplan-${{ matrix.moduleName }} \
             -lock=false \
-            -input=false
+            -input=false \
+            -refresh=false
