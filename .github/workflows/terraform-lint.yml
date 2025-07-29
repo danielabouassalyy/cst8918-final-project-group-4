@@ -9,7 +9,6 @@ on:
 jobs:
   fmt-validate:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
 
@@ -24,5 +23,5 @@ jobs:
       - name: Terraform validate
         run: terraform init -backend=false && terraform validate
 
-      - name: tfsec
-        uses: aquasecurity/tfsec-action@v1.0.3
+      - name: tfsec scan
+        uses: aquasecurity/tfsec-action@v1.0.2
