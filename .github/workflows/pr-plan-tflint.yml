@@ -8,7 +8,6 @@ on:
 jobs:
   plan-per-module:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         include:
@@ -17,24 +16,22 @@ jobs:
             plan_vars: >-
               -var="resource_group_name=cst8918-final-project-group-4"
               -var="location=canadacentral"
-              -var="storage_account_name=abou0344tfstate"
-              -var="container_name=tfstate"
           - modulePath: "modules/network"
             moduleName: "network"
             plan_vars: >-
               -var="resource_group_name=cst8918-final-project-group-4"
               -var="location=canadacentral"
               -var="vnet_cidr=10.0.0.0/14"
-              -var='subnet_prefixes=["10.0.0.0/16","10.1.0.0/16","10.2.0.0/16","10.3.0.0/16"]'
+              -var='subnet_prefixes={prod="10.0.0.0/16",test="10.1.0.0/16",dev="10.2.0.0/16",admin="10.3.0.0/16"}'
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.5.0
+          terraform_version: "1.5.0"
 
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v1
