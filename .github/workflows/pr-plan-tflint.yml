@@ -20,6 +20,7 @@ jobs:
           - module: modules/network
             plan_vars: >-
               -var="resource_group_name=cst8918-final-project-group-4"
+              -var="location=canadacentral"
               -var="vnet_cidr=10.0.0.0/14"
               -var='subnet_prefixes=["10.0.0.0/16","10.1.0.0/16","10.2.0.0/16","10.3.0.0/16"]'
 
