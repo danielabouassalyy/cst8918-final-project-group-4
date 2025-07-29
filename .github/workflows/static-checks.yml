@@ -1,0 +1,31 @@
+name: Static Checks
+
+on: [push]                 # runs on every push to any branch
+
+jobs:
+  format-validate-tfsec:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "1.5.0"
+
+      # download modules locally (skip remote backend)
+      - name: Terraform Init
+        run: terraform init -backend=false
+
+      - name: Terraform fmt
+        run: terraform fmt -check -recursive
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3          # stable tag
+        with:
+          additional_args: --no-color --soft-fail       # comment issues but don’t fail the build
