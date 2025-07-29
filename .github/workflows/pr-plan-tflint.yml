@@ -12,13 +12,13 @@ jobs:
       matrix:
         include:
           - module: modules/blob-backend
-            plan_vars: |
+            plan_vars: >-
               -var="resource_group_name=cst8918-final-project-group-4"
               -var="storage_account_name=abou0344tfstate"
               -var="container_name=tfstate"
               -var="location=canadacentral"
           - module: modules/network
-            plan_vars: |
+            plan_vars: >-
               -var="resource_group_name=cst8918-final-project-group-4"
               -var="vnet_cidr=10.0.0.0/14"
               -var='subnet_prefixes=["10.0.0.0/16","10.1.0.0/16","10.2.0.0/16","10.3.0.0/16"]'
@@ -45,4 +45,8 @@ jobs:
         working-directory: ${{ matrix.module }}
         run: |
           terraform init -backend=false -reconfigure
-          terraform plan -out=tfplan -lock=false -input=false ${{ matrix.plan_vars }}
+          terraform plan \
+            -out=tfplan \
+            -lock=false \
+            -input=false \
+            ${{ matrix.plan_vars }}
