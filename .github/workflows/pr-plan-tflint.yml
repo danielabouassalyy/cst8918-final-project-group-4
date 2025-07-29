@@ -6,28 +6,25 @@ on:
       - main
 
 jobs:
-  terraform:
+  tflint-and-plan:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.5.0
 
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v1
 
       - name: Terraform Init & TFLint
         run: |
-          # Skip real backend, just init modules & providers so TFLint can run
           terraform init -backend=false
           tflint
 
       - name: Terraform Plan (no backend)
         run: |
-          # Again skip backend: plan locally against your code
-          terraform init -backend=false
+          terraform init -backend=false -reconfigure
           terraform plan -out=tfplan -lock=false -refresh=false
