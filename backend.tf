@@ -10,16 +10,16 @@ terraform {
     }
   }
 
-  # 3. Your existing remote‐state backend
+  # 3. Point at your new remote‐state backend in the CDTO subscription
   backend "azurerm" {
-    resource_group_name  = "cst8918-final-project-group-4"
-    storage_account_name = "abou0344tfstate"
-    container_name       = "tfstate"
-    key                  = "terraform.tfstate"
+    subscription_id       = "4f28dd96-a497-4f49-8d77-0c39fc199087"
+    resource_group_name   = "tfstate-rg"
+    storage_account_name  = "abou0344tfstatecdo"
+    container_name        = "tfstate"
+    key                   = "terraform.tfstate"
   }
 }
 
 provider "azurerm" {
   features {}
 }
-  
