@@ -26,14 +26,10 @@ jobs:
         with:
           terraform_version: 1.5.0
 
-      - name: Install TFLint
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y unzip
-          curl -sSL -o tflint.zip \
-            https://github.com/terraform-linters/tflint/releases/download/v0.41.1/tflint_linux_amd64.zip
-          unzip -q tflint.zip
-          sudo mv tflint /usr/local/bin/
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Terraform Init for lint
         run: terraform init -backend=false
