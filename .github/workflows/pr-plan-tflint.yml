@@ -8,6 +8,7 @@ on:
 jobs:
   plan-per-module:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         include:
@@ -32,10 +33,10 @@ jobs:
         run: tflint
 
       - name: Plan module ${{ matrix.moduleName }}
+        working-directory: ${{ matrix.modulePath }}
         run: |
           terraform init -backend=false
           terraform plan \
-            -target=module.${{ matrix.moduleName }} \
             -out=tfplan-${{ matrix.moduleName }} \
             -lock=false \
             -input=false \
