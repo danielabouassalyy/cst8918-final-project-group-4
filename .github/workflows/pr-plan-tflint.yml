@@ -19,11 +19,11 @@ jobs:
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v1
 
-      - name: Terraform Init
-        run: terraform init -backend=false
+      # Single init with -backend=false and -reconfigure
+      - name: Terraform Init & Plan
+        run: |
+          terraform init -backend=false -reconfigure
+          terraform plan -out=tfplan -lock=false
 
       - name: TFLint
         run: tflint
-
-      - name: Terraform Plan
-        run: terraform init -backend=false && terraform plan -out=tfplan
