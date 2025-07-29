@@ -8,13 +8,24 @@ on:
 jobs:
   plan-per-module:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         include:
           - modulePath: "modules/blob-backend"
             moduleName: "blob-backend"
+            plan_vars: >-
+              -var="resource_group_name=cst8918-final-project-group-4"
+              -var="location=canadacentral"
+              -var="storage_account_name=abou0344tfstate"
+              -var="container_name=tfstate"
           - modulePath: "modules/network"
             moduleName: "network"
+            plan_vars: >-
+              -var="resource_group_name=cst8918-final-project-group-4"
+              -var="location=canadacentral"
+              -var="vnet_cidr=10.0.0.0/14"
+              -var='subnet_prefixes=["10.0.0.0/16","10.1.0.0/16","10.2.0.0/16","10.3.0.0/16"]'
 
     steps:
       - name: Checkout code
@@ -45,7 +56,4 @@ jobs:
             -lock=false \
             -input=false \
             -refresh=false \
-            -var="resource_group_name=cst8918-final-project-group-4" \
-            -var="location=canadacentral" \
-            ${{ matrix.moduleName == 'blob-backend' && '-var="storage_account_name=abou0344tfstate" -var="container_name=tfstate"' || '' }} \
-            ${{ matrix.moduleName == 'network' && '-var="vnet_cidr=10.0.0.0/14" -var=\'subnet_prefixes={prod="10.0.0.0/16",test="10.1.0.0/16",dev="10.2.0.0/16",admin="10.3.0.0/16"}\'\' || '' }}
+            ${{ matrix.plan_vars }}
