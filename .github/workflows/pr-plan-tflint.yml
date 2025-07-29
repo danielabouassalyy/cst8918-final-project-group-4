@@ -22,7 +22,7 @@ jobs:
               -var="resource_group_name=cst8918-final-project-group-4"
               -var="location=canadacentral"
               -var="vnet_cidr=10.0.0.0/14"
-              -var='subnet_prefixes=["10.0.0.0/16","10.1.0.0/16","10.2.0.0/16","10.3.0.0/16"]'
+              -var='subnet_prefixes={prod="10.0.0.0/16",test="10.1.0.0/16",dev="10.2.0.0/16",admin="10.3.0.0/16"}'
 
     steps:
       - name: Checkout repo
@@ -50,4 +50,5 @@ jobs:
             -out=tfplan \
             -lock=false \
             -input=false \
+            -refresh=false \
             ${{ matrix.plan_vars }}
