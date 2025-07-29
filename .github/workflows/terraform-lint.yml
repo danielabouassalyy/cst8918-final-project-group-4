@@ -25,4 +25,4 @@ jobs:
         run: terraform init -backend=false && terraform validate
 
       - name: tfsec
-        uses: aquasecurity/tfsec-action@v1.0.4
+        uses: aquasecurity/tfsec-action@v1.0.3
