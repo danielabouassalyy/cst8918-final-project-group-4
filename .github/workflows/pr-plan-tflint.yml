@@ -37,6 +37,7 @@ jobs:
 
       - name: Plan module ${{ matrix.moduleName }}
         run: |
+          terraform init -backend=false -reconfigure
           terraform plan \
             -target=module.${{ matrix.moduleName }} \
             -out=tfplan-${{ matrix.moduleName }} \
