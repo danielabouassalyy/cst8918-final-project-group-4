@@ -18,13 +18,20 @@ jobs:
             moduleName: "network"
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - uses: hashicorp/setup-terraform@v2
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.0
 
-      - uses: terraform-linters/setup-tflint@v1
+      - name: Install TFLint
+        run: |
+          wget -qO tflint.zip \
+            https://github.com/terraform-linters/tflint/releases/download/v0.41.1/tflint_linux_amd64.zip
+          unzip -q tflint.zip
+          sudo mv tflint /usr/local/bin/
 
       - name: Terraform Init for lint
         run: terraform init -backend=false
