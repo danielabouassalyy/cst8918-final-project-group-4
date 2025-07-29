@@ -1,0 +1,6 @@
+# Terraform local state
+*.tfstate*
+.terraform/
+
+# VSCode
+.vscode/
