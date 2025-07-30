@@ -19,7 +19,7 @@ module "network" {
   }
 }
 
-module "aks" {
+module "aks_test" {
   source = "./modules/aks/test"
 
   aks_cluster_name    = "kubernetes_cluster"
@@ -27,6 +27,14 @@ module "aks" {
   resource_group_name = "cst8918-final-project-group-4"
 
   subnet_id = module.network.subnet_ids["test"]
+}
+
+module "aks_prod" {
+  source = "./modules/aks/prod"
+
+  aks_cluster_name    = "kubernetes_cluster"
+  location            = "Canada Central"
+  resource_group_name = "cst8918-final-project-group-4"
 }
 
 module "redis_test" {

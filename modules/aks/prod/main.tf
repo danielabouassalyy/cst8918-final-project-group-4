@@ -30,10 +30,8 @@ resource "azurerm_kubernetes_cluster" "cluster" {
     name                = "default"
     min_count           = 1
     max_count           = 3
-    enable_auto_scaling = true
     type                = "VirtualMachineScaleSets"
     vm_size             = "Standard_B2s"
-    vnet_subnet_id      = var.subnet_id
   }
 
   network_profile {
