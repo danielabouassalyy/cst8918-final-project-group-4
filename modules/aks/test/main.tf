@@ -17,10 +17,10 @@ resource "azurerm_kubernetes_cluster" "cluster" {
   resource_group_name               = azurerm_resource_group.cluster.name
   role_based_access_control_enabled = true
   dns_prefix                        = "leaks1"
-  kubernetes_version                = 1.32
+  kubernetes_version                = "1.32"
 
   api_server_access_profile {
-    authorized_ip_ranges     = [] # Empty means no public access
+    authorized_ip_ranges = [] # Empty means no public access
   }
 
   private_cluster_enabled = true
