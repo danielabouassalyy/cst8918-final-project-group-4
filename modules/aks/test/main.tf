@@ -35,6 +35,8 @@ resource "azurerm_kubernetes_cluster" "cluster" {
     type = "SystemAssigned"
   }
 
+  role_based_access_control_enabled = true
+
   tags = {
     Environment = "test"
   }
@@ -50,6 +52,36 @@ resource "azurerm_monitor_diagnostic_setting" "aks_diagnostics" {
   name                       = "aks-diagnostics"
   target_resource_id         = azurerm_kubernetes_cluster.cluster.id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.aks_logs.id
+
+  log {
+    category = "kube-apiserver"
+    enabled  = true
+
+    retention_policy {
+      enabled = false
+      days    = 0
+    }
+  }
+
+  log {
+    category = "kube-controller-manager"
+    enabled  = true
+
+    retention_policy {
+      enabled = false
+      days    = 0
+    }
+  }
+
+  log {
+    category = "cluster-autoscaler"
+    enabled  = true
+
+    retention_policy {
+      enabled = false
+      days    = 0
+    }
+  }
 
   metric {
     category = "AllMetrics"
