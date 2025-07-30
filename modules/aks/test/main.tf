@@ -39,6 +39,10 @@ resource "azurerm_kubernetes_cluster" "cluster" {
     Environment = "test"
   }
 
+  api_server_authorized_ip_ranges = [
+    "10.1.0.0/16" # Replace with your actual IP
+  ]
+
 }
 
 resource "azurerm_monitor_diagnostic_setting" "aks_diagnostics" {
