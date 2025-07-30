@@ -20,13 +20,11 @@ resource "azurerm_kubernetes_cluster" "cluster" {
   kubernetes_version                = 1.32
 
   api_server_access_profile {
-    authorized_ip_ranges = [
-      "10.0.0.0/16",
-      "10.1.0.0/16",
-      "10.2.0.0/16",
-      "10.3.0.0/16"
-    ]
+    authorized_ip_ranges     = [] # Empty means no public access
+    vnet_integration_enabled = true
   }
+
+  private_cluster_enabled = true
 
   default_node_pool {
     name           = "default"
