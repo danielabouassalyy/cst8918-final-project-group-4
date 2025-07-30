@@ -21,7 +21,6 @@ resource "azurerm_kubernetes_cluster" "cluster" {
 
   api_server_access_profile {
     authorized_ip_ranges     = [] # Empty means no public access
-    vnet_integration_enabled = true
   }
 
   private_cluster_enabled = true
