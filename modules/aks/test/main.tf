@@ -35,8 +35,6 @@ resource "azurerm_kubernetes_cluster" "cluster" {
     type = "SystemAssigned"
   }
 
-  role_based_access_control_enabled = true
-
   tags = {
     Environment = "test"
   }
