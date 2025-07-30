@@ -53,7 +53,6 @@ resource "azurerm_monitor_diagnostic_setting" "aks_diagnostics" {
 
   enabled_log {
     category = "kube-apiserver"
-    enabled  = true
 
     retention_policy {
       enabled = false
@@ -63,7 +62,6 @@ resource "azurerm_monitor_diagnostic_setting" "aks_diagnostics" {
 
   enabled_log {
     category = "kube-controller-manager"
-    enabled  = true
 
     retention_policy {
       enabled = false
@@ -73,7 +71,6 @@ resource "azurerm_monitor_diagnostic_setting" "aks_diagnostics" {
 
   enabled_log {
     category = "cluster-autoscaler"
-    enabled  = true
 
     retention_policy {
       enabled = false
