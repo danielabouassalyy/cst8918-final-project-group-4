@@ -40,7 +40,7 @@ resource "azurerm_kubernetes_cluster" "cluster" {
   }
 
   api_server_access_profile {
-    api_server_authorized_ip_ranges = [
+    authorized_ip_ranges = [
       "10.1.0.0/16" # Replace with your actual IP
     ]
   }
