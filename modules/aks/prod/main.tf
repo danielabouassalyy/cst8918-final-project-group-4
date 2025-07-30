@@ -13,12 +13,12 @@ resource "azurerm_log_analytics_workspace" "aks_logs" {
 
 
 resource "azurerm_kubernetes_cluster" "cluster" {
-  name                = var.aks_cluster_name
-  location            = azurerm_resource_group.cluster.location
-  resource_group_name = azurerm_resource_group.cluster.name
+  name                              = var.aks_cluster_name
+  location                          = azurerm_resource_group.cluster.location
+  resource_group_name               = azurerm_resource_group.cluster.name
   role_based_access_control_enabled = true
-  dns_prefix          = "leaks1"
-  kubernetes_version  = 1.32
+  dns_prefix                        = "leaks1"
+  kubernetes_version                = 1.32
 
   api_server_access_profile {
     authorized_ip_ranges = [] # Empty means no public access
@@ -33,7 +33,7 @@ resource "azurerm_kubernetes_cluster" "cluster" {
     enable_auto_scaling = true
     type                = "VirtualMachineScaleSets"
     vm_size             = "Standard_B2s"
-    vnet_subnet_id = var.subnet_id
+    vnet_subnet_id      = var.subnet_id
   }
 
   network_profile {
