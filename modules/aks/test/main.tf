@@ -3,8 +3,8 @@ resource "azurerm_resource_group" "cluster" {
   location = var.location
 }
 
-resource "azurerm_log_analytics_workspace" "example" {
-  name                = "example-logs"
+resource "azurerm_log_analytics_workspace" "aks_logs" {
+  name                = "aks-logs"
   location            = azurerm_resource_group.cluster.location
   resource_group_name = azurerm_resource_group.cluster.name
   sku                 = "PerGB2018"
@@ -39,4 +39,40 @@ resource "azurerm_kubernetes_cluster" "cluster" {
     Environment = "test"
   }
 
+}
+
+resource "azurerm_monitor_diagnostic_setting" "aks_diagnostics" {
+  name                       = "aks-diagnostics"
+  target_resource_id         = azurerm_kubernetes_cluster.cluster.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.aks_logs.id
+
+  logs {
+    category = "kube-apiserver"
+    enabled  = true
+
+    retention_policy {
+      enabled = false
+      days    = 0
+    }
+  }
+
+  logs {
+    category = "kube-controller-manager"
+    enabled  = true
+
+    retention_policy {
+      enabled = false
+      days    = 0
+    }
+  }
+
+  metrics {
+    category = "AllMetrics"
+    enabled  = true
+
+    retention_policy {
+      enabled = false
+      days    = 0
+    }
+  }
 }
