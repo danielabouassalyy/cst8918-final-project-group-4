@@ -35,6 +35,8 @@ module "aks_prod" {
   aks_cluster_name    = "kubernetes_cluster"
   location            = "Canada Central"
   resource_group_name = "cst8918-final-project-group-4"
+
+  subnet_id = module.network.subnet_ids["prod"]
 }
 
 module "redis_test" {
