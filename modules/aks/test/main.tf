@@ -19,6 +19,15 @@ resource "azurerm_kubernetes_cluster" "cluster" {
   dns_prefix                        = "leaks1"
   kubernetes_version                = 1.32
 
+  api_server_access_profile {
+    authorized_ip_ranges = [
+      "10.0.0.0/16",
+      "10.1.0.0/16",
+      "10.2.0.0/16",
+      "10.3.0.0/16"
+    ]
+  }
+
   default_node_pool {
     name           = "default"
     node_count     = 1
