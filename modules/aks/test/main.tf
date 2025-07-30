@@ -7,6 +7,8 @@ resource "azurerm_kubernetes_cluster" "cluster" {
   name                = var.aks_cluster_name
   location            = azurerm_resource_group.cluster.location
   resource_group_name = azurerm_resource_group.cluster.name
+  role_based_access_control_enabled = true
+  api_server_authorized_ip_ranges = ["203.0.113.0/24"]
   dns_prefix          = "leaks1"
   kubernetes_version  = 1.32
 
@@ -17,6 +19,18 @@ resource "azurerm_kubernetes_cluster" "cluster" {
     vnet_subnet_id      = var.subnet_id
   }
 
+  addon_profile {
+    oms_agent {
+      enabled                    = true
+      log_analytics_workspace_id = azurerm_log_analytics_workspace.example.id
+    }
+  }
+
+  network_profile {
+    network_plugin    = "azure" # or "kubenet" depending on your setup
+    network_policy    = "azure" # or "calico"
+  }
+
   identity {
     type = "SystemAssigned"
   }
@@ -25,4 +39,12 @@ resource "azurerm_kubernetes_cluster" "cluster" {
     Environment = "test"
   }
 
+}
+
+resource "azurerm_log_analytics_workspace" "example" {
+  name                = "example-logs"
+  location            = azurerm_resource_group.cluster.location
+  resource_group_name = azurerm_resource_group.cluster.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
 }
