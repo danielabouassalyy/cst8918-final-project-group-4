@@ -27,11 +27,11 @@ resource "azurerm_kubernetes_cluster" "cluster" {
   private_cluster_enabled = true
 
   default_node_pool {
-    name                = "default"
-    min_count           = 1
-    max_count           = 3
-    type                = "VirtualMachineScaleSets"
-    vm_size             = "Standard_B2s"
+    name      = "default"
+    min_count = 1
+    max_count = 3
+    type      = "VirtualMachineScaleSets"
+    vm_size   = "Standard_B2s"
   }
 
   network_profile {
