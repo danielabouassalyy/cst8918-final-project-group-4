@@ -1,5 +1,3 @@
-
-
 module "blob-backend" {
   source               = "./modules/blob-backend"
   resource_group_name  = "cst8918-final-project-group-4"
@@ -19,4 +17,40 @@ module "network" {
     dev   = "10.2.0.0/16"
     admin = "10.3.0.0/16"
   }
+}
+
+module "aks_test" {
+  source = "./modules/aks/test"
+
+  aks_cluster_name    = "kubernetes_cluster"
+  location            = "Canada Central"
+  resource_group_name = "cst8918-final-project-group-4"
+
+  subnet_id = module.network.subnet_ids["test"]
+}
+
+module "aks_prod" {
+  source = "./modules/aks/prod"
+
+  aks_cluster_name    = "kubernetes_cluster"
+  location            = "Canada Central"
+  resource_group_name = "cst8918-final-project-group-4"
+
+  subnet_id = module.network.subnet_ids["prod"]
+}
+
+module "redis_test" {
+  source              = "./modules/redis/test"
+  name                = "redis-test"
+  location            = "Canada Central"
+  resource_group_name = "cst8918-final-project-group-4"
+  subnet_id           = module.network.subnet_ids["test"]
+}
+
+module "redis_prod" {
+  source              = "./modules/redis/prod"
+  name                = "redis-prod"
+  location            = "Canada Central"
+  resource_group_name = "cst8918-final-project-group-4"
+  subnet_id           = module.network.subnet_ids["prod"]
 }
