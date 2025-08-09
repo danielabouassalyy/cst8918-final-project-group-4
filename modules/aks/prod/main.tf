@@ -6,7 +6,6 @@ resource "azurerm_log_analytics_workspace" "aks_logs" {
   sku                 = "PerGB2018"
   retention_in_days   = 30
 }
-
 # AKS Prod Cluster
 resource "azurerm_kubernetes_cluster" "cluster" {
   dns_prefix          = var.aks_cluster_name
@@ -16,13 +15,13 @@ resource "azurerm_kubernetes_cluster" "cluster" {
   kubernetes_version  = "1.32"
 
   default_node_pool {
-    name = "default"
-
-    min_count      = 1
-    max_count      = 3
-    type           = "VirtualMachineScaleSets"
-    vm_size        = "Standard_B2s"
-    vnet_subnet_id = var.subnet_id
+    name                 = "default"
+    auto_scaling_enabled = true     # <-- add this line
+    min_count            = 1
+    max_count            = 3
+    type                 = "VirtualMachineScaleSets"
+    vm_size              = "Standard_B2s"
+    vnet_subnet_id       = var.subnet_id
   }
 
   network_profile {
@@ -30,16 +29,16 @@ resource "azurerm_kubernetes_cluster" "cluster" {
     network_policy    = "azure"
     load_balancer_sku = "standard"
     outbound_type     = "loadBalancer"
+   
+    service_cidr   = "172.16.0.0/16"
+    dns_service_ip = "172.16.0.10"
   }
 
-  identity {
-    type = "SystemAssigned"
-  }
+  identity { type = "SystemAssigned" }
 
-  tags = {
-    Environment = "Production"
-  }
+  tags = { Environment = "Production" }
 }
+
 
 # Diagnostic settings for OMS (Log Analytics)
 resource "azurerm_monitor_diagnostic_setting" "aks_diagnostics" {
