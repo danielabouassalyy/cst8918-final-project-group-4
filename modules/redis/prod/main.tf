@@ -5,8 +5,8 @@
 
 # Redis Cache (Prod)
 resource "azurerm_redis_cache" "redis" {
-  name                = var.name               # e.g. "redis-prod"
-  location            = var.location           # e.g. "Canada Central"
+  name                = var.name     # e.g. "redis-prod"
+  location            = var.location # e.g. "Canada Central"
   resource_group_name = var.resource_group_name
 
   sku_name            = "Basic"

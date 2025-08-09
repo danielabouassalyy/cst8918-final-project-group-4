@@ -9,17 +9,17 @@ resource "azurerm_log_analytics_workspace" "aks_logs" {
 
 # AKS Prod Cluster
 resource "azurerm_kubernetes_cluster" "cluster" {
-  dns_prefix = var.aks_cluster_name
+  dns_prefix          = var.aks_cluster_name
   name                = var.aks_cluster_name
   location            = var.location
   resource_group_name = var.resource_group_name
   kubernetes_version  = "1.32"
 
   default_node_pool {
-    name           = "default"
-  
-    min_count           = 1
-    max_count           = 3
+    name = "default"
+
+    min_count      = 1
+    max_count      = 3
     type           = "VirtualMachineScaleSets"
     vm_size        = "Standard_B2s"
     vnet_subnet_id = var.subnet_id

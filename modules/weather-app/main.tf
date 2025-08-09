@@ -33,7 +33,7 @@ resource "kubernetes_deployment" "app" {
   metadata {
     name      = "weather-app"
     namespace = kubernetes_namespace.app.metadata[0].name
-    labels = { app = "weather-app" }
+    labels    = { app = "weather-app" }
   }
 
   spec {
