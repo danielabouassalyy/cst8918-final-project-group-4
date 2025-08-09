@@ -26,18 +26,21 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Who am I (sanity)
+        run: az account show -o table
+
       - name: Build image in ACR
         run: |
           az acr build -r ${{ secrets.ACR_NAME }} \
             -t ${{ secrets.ACR_LOGIN_SERVER }}/weather-app:${{ github.sha }} app
 
-      - name: Set AKS context (test, admin)
+      - name: Set AKS context (test, user creds)
         run: |
           az aks get-credentials \
             -g ${{ secrets.AZURE_RESOURCE_GROUP }} \
             -n ${{ secrets.AKS_TEST_CLUSTER }} \
-            --overwrite-existing \
-            --admin
+            --overwrite-existing
+          kubectl cluster-info
 
       - name: Deploy to test
         run: |
