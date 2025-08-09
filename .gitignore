@@ -1,18 +1,24 @@
-# ── Terraform ─────────────────────────────────────────────────────────
-*.tfstate                # local state
-*.tfstate.*              # state backups / partials
-*.tfvars                 # per‑dev variable files (if you ever use them)
-*.tfplan                 # plan output files
-crash.log                # crash logs
-.terraform\provider      # local provider/cache dir
-.terraform\infra
+# ── Terraform (keep lockfile) ──────────────────────────────────────
+.terraform/               # local plugin/module cache
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+*.tfvars.json
+*.auto.tfvars
+# plan files
+*.tfplan
+tfplan
 
-# ── VS Code ────────────────────────────────────────────────────────────
+# explicitly keep the lock file (tracked on purpose)
+!.terraform.lock.hcl
+
+# ── Local/private files you created ────────────────────────────────
+fc-*.json
+oldstate-backup.json
+ghapp.json
+
+# ── Editor / OS junk ───────────────────────────────────────────────
 .vscode/
-
-# ── macOS / Windows cruft (optional) ──────────────────────────────────
 .DS_Store
 Thumbs.db
-
-# ── Misc secrets you generated during OIDC testing ────────────────────
-ghapp.json

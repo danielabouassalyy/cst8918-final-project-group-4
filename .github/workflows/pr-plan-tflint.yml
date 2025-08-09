@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   plan-per-module:
+    name: plan-${{ matrix.moduleName }} 
     runs-on: ubuntu-latest
 
     strategy:

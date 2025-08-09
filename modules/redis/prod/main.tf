@@ -1,20 +1,19 @@
-# Resource Group
-resource "azurerm_resource_group" "rg" {
-  name     = "example-redis-rg"
-  location = "eastus"
-}
+# Terraform variables for this module (ensure you have these in variables.tf)
+# variable "name" { type = string }
+# variable "location" { type = string }
+# variable "resource_group_name" { type = string }
 
-# Redis Cache
+# Redis Cache (Prod)
 resource "azurerm_redis_cache" "redis" {
-  name                = var.name # Must be globally unique
-  location            = var.location
+  name                = var.name     # e.g. "redis-prod"
+  location            = var.location # e.g. "Canada Central"
   resource_group_name = var.resource_group_name
 
-  # SKU options: Basic, Standard, Premium
   sku_name            = "Basic"
-  capacity            = 1
+  capacity            = 0
   family              = "C"
   minimum_tls_version = "1.2"
+
   redis_configuration {
     maxmemory_policy = "allkeys-lru"
   }
