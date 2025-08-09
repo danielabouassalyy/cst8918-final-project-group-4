@@ -1,5 +1,4 @@
 name: app-test
-
 on:
   pull_request:
     branches: [ main ]
@@ -33,6 +32,12 @@ jobs:
         run: |
           az acr build -r ${{ secrets.ACR_NAME }} \
             -t ${{ secrets.ACR_LOGIN_SERVER }}/weather-app:${{ github.sha }} app
+
+      # optional debug (remove once green)
+      - name: Show my role on AKS (debug)
+        run: |
+          AKS_ID=$(az aks show -g "${{ secrets.AZURE_RESOURCE_GROUP }}" -n "${{ secrets.AKS_TEST_CLUSTER }}" --query id -o tsv)
+          az role assignment list --assignee "${{ secrets.AZURE_CLIENT_ID }}" --scope "$AKS_ID" -o table
 
       - name: Set AKS context (test, user creds)
         run: |
