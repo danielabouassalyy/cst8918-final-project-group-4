@@ -6,30 +6,47 @@ on:
       - 'app/**'
       - 'k8s/**'
       - '.github/workflows/deploy-prod.yml'
+
 permissions:
   id-token: write
   contents: read
+
 jobs:
   build-and-deploy-prod:
-    if: ${{ secrets.AKS_PROD_CLUSTER != '' }} # guard until prod AKS exists
     runs-on: ubuntu-latest
+    env:
+      AKS_PROD_CLUSTER: ${{ secrets.AKS_PROD_CLUSTER }}
+
     steps:
       - uses: actions/checkout@v4
+
+      # Skip nicely if prod cluster secret is empty
+      - name: Skip if no prod cluster
+        if: ${{ env.AKS_PROD_CLUSTER == '' }}
+        run: echo "AKS_PROD_CLUSTER is empty; skipping prod deploy."
+
       - name: Azure login (OIDC)
+        if: ${{ env.AKS_PROD_CLUSTER != '' }}
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: Build image in ACR
+        if: ${{ env.AKS_PROD_CLUSTER != '' }}
         run: |
           az acr build -r ${{ secrets.ACR_NAME }} \
             -t ${{ secrets.ACR_LOGIN_SERVER }}/weather-app:${{ github.sha }} app
+
       - name: Set AKS context (prod)
+        if: ${{ env.AKS_PROD_CLUSTER != '' }}
         run: |
           az aks get-credentials -g ${{ secrets.AZURE_RESOURCE_GROUP }} \
-            -n ${{ secrets.AKS_PROD_CLUSTER }} --overwrite-existing
+            -n ${{ env.AKS_PROD_CLUSTER }} --overwrite-existing
+
       - name: Deploy to prod
+        if: ${{ env.AKS_PROD_CLUSTER != '' }}
         run: |
           kubectl apply -f k8s/weather-app.yaml
           kubectl set image deploy/weather-app \
