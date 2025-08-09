@@ -4,14 +4,14 @@ on:
   pull_request:
     branches: [ main ]
 
-# Allow this job to request an OIDC token for Azure login
 permissions:
-  id-token: write     # required for azure/login
-  contents: read      # checkout needs this
+  id-token: write
+  contents: read
+  pull-requests: write
 
 jobs:
   plan-per-module:
-    name: plan-${{ matrix.moduleName }} 
+    name: plan-${{ matrix.moduleName }}
     runs-on: ubuntu-latest
 
     strategy:
@@ -22,7 +22,7 @@ jobs:
             plan_vars: >-
               -var="resource_group_name=cst8918-final-project-group-4"
               -var="location=canadacentral"
-              -var="storage_account_name=abou0344tfstate"
+              -var="storage_account_name=abou0344tfstate2"
               -var="container_name=tfstate"
 
           - modulePath: "modules/network"
@@ -35,48 +35,6 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # 🔍 sanity‑check: secret lengths
-      - name: 🔍 Echo secret lengths
-        run: |
-          echo "CLIENT  len=${#AZURE_CLIENT_ID}"
-          echo "TENANT  len=${#AZURE_TENANT_ID}"
-          echo "SUBS    len=${#AZURE_SUBSCRIPTION_ID}"
-        env:
-          AZURE_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID }}
-          AZURE_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
-          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Azure Login via OIDC
-        uses: azure/login@v1
-        with:
-          client-id:       ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id:       ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: "1.5.0"
-
-      - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@v1
-
-      # one init for TFLint (no backend needed)
-      - name: Terraform Init for lint
-        run: terraform init -backend=false
-
-      - name: TFLint
-        run: tflint
-
-      - name: Plan module ${{ matrix.moduleName }}
-        working-directory: ${{ matrix.modulePath }}
-        run: |
-          terraform init -backend=false
-          terraform plan \
-            -out=tfplan-${{ matrix.moduleName }} \
-            -lock=false \
-            -input=false \
-            -refresh=false \
-            ${{ matrix.plan_vars }}
+      # Login is optional here (we
