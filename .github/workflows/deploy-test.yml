@@ -1,4 +1,5 @@
 name: app-test
+
 on:
   pull_request:
     branches: [ main ]
@@ -14,29 +15,33 @@ jobs:
       id-token: write
       contents: read
       pull-requests: write
+
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Azure login (OIDC)
-      uses: azure/login@v2
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    - name: Build image in ACR
-      run: |
-        az acr build -r ${{ secrets.ACR_NAME }} \
-          -t ${{ secrets.ACR_LOGIN_SERVER }}/weather-app:${{ github.sha }} app
+      - name: Build image in ACR
+        run: |
+          az acr build -r ${{ secrets.ACR_NAME }} \
+            -t ${{ secrets.ACR_LOGIN_SERVER }}/weather-app:${{ github.sha }} app
 
-    - name: Set AKS context (test)
-      run: |
-        az aks get-credentials -g ${{ secrets.AZURE_RESOURCE_GROUP }} \
-          -n ${{ secrets.AKS_TEST_CLUSTER }} --overwrite-existing
+      - name: Set AKS context (test, admin)
+        run: |
+          az aks get-credentials \
+            -g ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            -n ${{ secrets.AKS_TEST_CLUSTER }} \
+            --overwrite-existing \
+            --admin
 
-    - name: Deploy to test
-      run: |
-        kubectl apply -f k8s/weather-app.yaml
-        kubectl set image deploy/weather-app \
-          weather-app=${{ secrets.ACR_LOGIN_SERVER }}/weather-app:${{ github.sha }} --record
-        kubectl rollout status deploy/weather-app --timeout=180s
+      - name: Deploy to test
+        run: |
+          kubectl apply -f k8s/weather-app.yaml
+          kubectl set image deploy/weather-app \
+            weather-app=${{ secrets.ACR_LOGIN_SERVER }}/weather-app:${{ github.sha }} --record
+          kubectl rollout status deploy/weather-app --timeout=180s
