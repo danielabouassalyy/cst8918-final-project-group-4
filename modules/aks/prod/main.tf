@@ -6,6 +6,7 @@ resource "azurerm_log_analytics_workspace" "aks_logs" {
   sku                 = "PerGB2018"
   retention_in_days   = 30
 }
+
 # AKS Prod Cluster
 resource "azurerm_kubernetes_cluster" "cluster" {
   dns_prefix          = var.aks_cluster_name
@@ -16,7 +17,7 @@ resource "azurerm_kubernetes_cluster" "cluster" {
 
   default_node_pool {
     name                 = "default"
-    auto_scaling_enabled = true     # <-- add this line
+    auto_scaling_enabled = true
     min_count            = 1
     max_count            = 3
     type                 = "VirtualMachineScaleSets"
@@ -29,7 +30,8 @@ resource "azurerm_kubernetes_cluster" "cluster" {
     network_policy    = "azure"
     load_balancer_sku = "standard"
     outbound_type     = "loadBalancer"
-   
+
+    # Non-overlapping with VNet/subnets
     service_cidr   = "172.16.0.0/16"
     dns_service_ip = "172.16.0.10"
   }
@@ -39,7 +41,6 @@ resource "azurerm_kubernetes_cluster" "cluster" {
   tags = { Environment = "Production" }
 }
 
-
 # Diagnostic settings for OMS (Log Analytics)
 resource "azurerm_monitor_diagnostic_setting" "aks_diagnostics" {
   name                       = "aks-diagnostics"
@@ -48,34 +49,22 @@ resource "azurerm_monitor_diagnostic_setting" "aks_diagnostics" {
 
   enabled_log {
     category = "kube-apiserver"
-    retention_policy {
-      enabled = false
-      days    = 0
-    }
+    retention_policy { enabled = false, days = 0 }
   }
 
   enabled_log {
     category = "kube-controller-manager"
-    retention_policy {
-      enabled = false
-      days    = 0
-    }
+    retention_policy { enabled = false, days = 0 }
   }
 
   enabled_log {
     category = "cluster-autoscaler"
-    retention_policy {
-      enabled = false
-      days    = 0
-    }
+    retention_policy { enabled = false, days = 0 }
   }
 
   metric {
     category = "AllMetrics"
     enabled  = true
-    retention_policy {
-      enabled = false
-      days    = 0
-    }
+    retention_policy { enabled = false, days = 0 }
   }
 }

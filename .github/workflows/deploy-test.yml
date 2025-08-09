@@ -25,26 +25,13 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # === Force known-good infra values (temporary) ===
-      - name: Force RG/AKS/ACR (temp)
-        run: |
-          echo "RG=cst8918-final-project-group-4" >> $GITHUB_ENV
-          echo "AKS=aks-test-cluster" >> $GITHUB_ENV
-          echo "ACR_NAME=cst8918group4acr0tnj2" >> $GITHUB_ENV
-          echo "ACR_LOGIN_SERVER=cst8918group4acr0tnj2.azurecr.io" >> $GITHUB_ENV
-
-      - name: Echo inputs (debug)
-        run: |
-          echo "Sub=${{ secrets.AZURE_SUBSCRIPTION_ID }}"
-          echo "RG=$RG"
-          echo "AKS=$AKS"
-          echo "ACR_NAME=$ACR_NAME"
-          echo "ACR_LOGIN_SERVER=$ACR_LOGIN_SERVER"
-
       - name: Who am I (sanity)
         run: |
           set -e
           az account show -o table
+          echo "Sub: ${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          echo "Tenant: ${{ secrets.AZURE_TENANT_ID }}"
+          echo "App (client) ID: ${{ secrets.AZURE_CLIENT_ID }}"
 
       # 🔎 Resolve the SP *object id* and the scopes we care about
       - name: Resolve object IDs and scopes (debug)
@@ -52,8 +39,11 @@ jobs:
         run: |
           set -euo pipefail
           APP_ID="${{ secrets.AZURE_CLIENT_ID }}"
+          RG="${{ secrets.AZURE_RESOURCE_GROUP }}"
+          AKS="${{ secrets.AKS_TEST_CLUSTER }}"
           SUB="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
 
+          # Service principal OBJECT ID for role checks (not the same as client id)
           SP_OID=$(az ad sp show --id "$APP_ID" --query id -o tsv)
           echo "SP_OID=$SP_OID"
           echo "SP_OID=$SP_OID" >> $GITHUB_OUTPUT
@@ -62,36 +52,44 @@ jobs:
           echo "RG_ID=$RG_ID"
           echo "RG_ID=$RG_ID" >> $GITHUB_OUTPUT
 
+          # Build AKS resource ID without needing read access
           AKS_ID="/subscriptions/$SUB/resourceGroups/$RG/providers/Microsoft.ContainerService/managedClusters/$AKS"
           echo "AKS_ID=$AKS_ID"
           echo "AKS_ID=$AKS_ID" >> $GITHUB_OUTPUT
 
-      # 🔎 What roles do we have at RG + AKS scopes?
+      # 🔎 What roles do we have at RG and AKS scopes?
       - name: List role assignments at RG + AKS (debug)
         run: |
           set -e
           SP_OID="${{ steps.ids.outputs.SP_OID }}"
           RG_ID="${{ steps.ids.outputs.RG_ID }}"
           AKS_ID="${{ steps.ids.outputs.AKS_ID }}"
+
           echo "=== Role assignments at RG (should include Reader + AKS Cluster User) ==="
           az role assignment list --assignee-object-id "$SP_OID" --scope "$RG_ID" -o table || true
-          echo "=== Role assignments at AKS (ok if empty if roles are inherited from SUB/RG) ==="
+
+          echo "=== Role assignments at AKS (ok if empty if roles are inherited from RG) ==="
           az role assignment list --assignee-object-id "$SP_OID" --scope "$AKS_ID" -o table || true
 
       # ✅ Build and push in ACR
       - name: Build image in ACR
         run: |
           set -e
-          az acr build -r "$ACR_NAME" \
-            -t "$ACR_LOGIN_SERVER/weather-app:${{ github.sha }}" app
+          az acr build -r "${{ secrets.ACR_NAME }}" \
+            -t "${{ secrets.ACR_LOGIN_SERVER }}/weather-app:${{ github.sha }}" app
 
-      # ❌ Avoid az aks show here; use RG/AKS envs
+      # Use the configured test cluster
       - name: Set AKS context (test, user creds)
         run: |
           set -e
+          RG="${{ secrets.AZURE_RESOURCE_GROUP }}"
+          AKS="${{ secrets.AKS_TEST_CLUSTER }}"
           echo "Sleeping 15s to let RBAC settle (if just assigned)..."
           sleep 15
-          az aks get-credentials -g "$RG" -n "$AKS" --overwrite-existing
+          az aks get-credentials \
+            -g "$RG" \
+            -n "$AKS" \
+            --overwrite-existing
           kubectl cluster-info
 
       - name: Deploy to test
@@ -99,5 +97,5 @@ jobs:
           set -e
           kubectl apply -f k8s/weather-app.yaml
           kubectl set image deploy/weather-app \
-            weather-app="$ACR_LOGIN_SERVER/weather-app:${{ github.sha }}" --record
+            weather-app=${{ secrets.ACR_LOGIN_SERVER }}/weather-app:${{ github.sha }} --record
           kubectl rollout status deploy/weather-app --timeout=180s
