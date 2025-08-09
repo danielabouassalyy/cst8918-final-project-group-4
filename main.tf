@@ -67,11 +67,6 @@ module "redis_prod" {
 }
 
 # ---------------- Read clusters for kubelet identities ----------------
-data "azurerm_kubernetes_cluster" "aks_test" {
-  name                = "aks-test-cluster"
-  resource_group_name = "cst8918-final-project-group-4"
-  depends_on          = [module.aks_test]
-}
 
 data "azurerm_kubernetes_cluster" "aks_prod" {
   name                = "aks-prod-cluster"
